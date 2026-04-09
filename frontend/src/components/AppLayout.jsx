@@ -1,4 +1,5 @@
 import { NavLink, Outlet } from 'react-router-dom';
+import { useCart } from '../context/CartContext';
 
 const links = [
   { to: '/', label: 'Home' },
@@ -10,13 +11,28 @@ const links = [
 ];
 
 function AppLayout() {
+  const { totalItems } = useCart();
+
+  const linksWithCount = links.map((link) => {
+    if (link.to === '/cart') {
+      return {
+        ...link,
+        label: totalItems > 0 ? `Cart (${totalItems})` : 'Cart'
+      };
+    }
+    return link;
+  });
+
   return (
     <div className="app-shell">
       <header className="topbar">
         <div className="topbar-content">
-          <h1 className="brand">Grocery Shop</h1>
+          <div className="brand-block">
+            <h1 className="brand">Grocery Shop</h1>
+            <p className="brand-tag">Simple everyday essentials</p>
+          </div>
           <nav className="nav-links" aria-label="Main navigation">
-            {links.map((link) => (
+            {linksWithCount.map((link) => (
               <NavLink
                 key={link.to}
                 to={link.to}
@@ -35,6 +51,10 @@ function AppLayout() {
       <main className="page-wrap">
         <Outlet />
       </main>
+
+      <footer className="footer">
+        <div className="footer-content">© 2026 Kanav Sharma. All Rights Reserved</div>
+      </footer>
     </div>
   );
 }

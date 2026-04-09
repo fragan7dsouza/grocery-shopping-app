@@ -2,8 +2,10 @@ import { useEffect, useState } from 'react';
 import PageCard from '../components/PageCard';
 import ProductCard from '../components/ProductCard';
 import api from '../services/api';
+import { useCart } from '../context/CartContext';
 
 function HomePage() {
+  const { addItem } = useCart();
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [errorMessage, setErrorMessage] = useState('');
@@ -26,7 +28,7 @@ function HomePage() {
   }, []);
 
   const handleAddToCart = (product) => {
-    console.log('Add to cart:', product.name);
+    addItem(product);
   };
 
   return (
