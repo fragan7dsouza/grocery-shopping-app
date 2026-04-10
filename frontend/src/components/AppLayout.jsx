@@ -1,27 +1,33 @@
-import { NavLink, Outlet } from 'react-router-dom';
+import { NavLink, Outlet, useNavigate } from 'react-router-dom';
 import { useCart } from '../context/CartContext';
-
-const links = [
-  { to: '/', label: 'Home' },
-  { to: '/login', label: 'Login' },
-  { to: '/register', label: 'Register' },
-  { to: '/cart', label: 'Cart' },
-  { to: '/orders', label: 'Orders' },
-  { to: '/admin', label: 'Admin' }
-];
+import { useAuth } from '../context/AuthContext';
 
 function AppLayout() {
+  const navigate = useNavigate();
   const { totalItems } = useCart();
+  const { user, token, clearSession } = useAuth();
 
-  const linksWithCount = links.map((link) => {
-    if (link.to === '/cart') {
-      return {
-        ...link,
-        label: totalItems > 0 ? `Cart (${totalItems})` : 'Cart'
-      };
-    }
-    return link;
-  });
+  const links = [{ to: '/', label: 'Home' }];
+
+  if (!token) {
+    links.push({ to: '/login', label: 'Login' }, { to: '/register', label: 'Register' });
+  }
+
+  if (user?.role === 'customer') {
+    links.push(
+      { to: '/cart', label: totalItems > 0 ? `Cart (${totalItems})` : 'Cart' },
+      { to: '/orders', label: 'Orders' }
+    );
+  }
+
+  if (user?.role === 'admin') {
+    links.push({ to: '/admin', label: 'Admin' });
+  }
+
+  const handleLogout = () => {
+    clearSession();
+    navigate('/login');
+  };
 
   return (
     <div className="app-shell">
@@ -31,20 +37,27 @@ function AppLayout() {
             <h1 className="brand">Grocery Shop</h1>
             <p className="brand-tag">Simple everyday essentials</p>
           </div>
-          <nav className="nav-links" aria-label="Main navigation">
-            {linksWithCount.map((link) => (
-              <NavLink
-                key={link.to}
-                to={link.to}
-                end={link.to === '/'}
-                className={({ isActive }) =>
-                  isActive ? 'nav-link active' : 'nav-link'
-                }
-              >
-                {link.label}
-              </NavLink>
-            ))}
-          </nav>
+          <div className="nav-group">
+            <nav className="nav-links" aria-label="Main navigation">
+              {links.map((link) => (
+                <NavLink
+                  key={link.to}
+                  to={link.to}
+                  end={link.to === '/'}
+                  className={({ isActive }) =>
+                    isActive ? 'nav-link active' : 'nav-link'
+                  }
+                >
+                  {link.label}
+                </NavLink>
+              ))}
+            </nav>
+            {token ? (
+              <button type="button" className="nav-logout" onClick={handleLogout}>
+                Logout
+              </button>
+            ) : null}
+          </div>
         </div>
       </header>
 

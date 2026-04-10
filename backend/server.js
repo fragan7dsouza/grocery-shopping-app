@@ -1,5 +1,7 @@
 const express = require('express');
 const dotenv = require('dotenv');
+const cors = require('cors');
+const path = require('path');
 const connectDB = require('./config/db');
 const { notFound, errorHandler } = require('./middleware/errorMiddleware');
 const healthRoutes = require('./routes/healthRoutes');
@@ -7,12 +9,17 @@ const authRoutes = require('./routes/authRoutes');
 const productRoutes = require('./routes/productRoutes');
 const orderRoutes = require('./routes/orderRoutes');
 
-dotenv.config();
+dotenv.config({ path: path.resolve(__dirname, '../.env') });
 
 connectDB();
 
 const app = express();
 
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL || 'http://localhost:5173'
+  })
+);
 app.use(express.json());
 
 app.get('/', (req, res) => {

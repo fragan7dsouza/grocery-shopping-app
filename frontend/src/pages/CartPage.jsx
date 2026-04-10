@@ -4,6 +4,7 @@ import { useCart } from '../context/CartContext';
 import { useAuth } from '../context/AuthContext';
 import { placeOrder } from '../services/orderService';
 import { useNavigate } from 'react-router-dom';
+import { FALLBACK_PRODUCT_IMAGE, formatINR } from '../utils/formatters';
 
 function CartPage() {
   const navigate = useNavigate();
@@ -61,11 +62,19 @@ function CartPage() {
         <div className="cart-list">
           {items.map((item) => (
             <article key={item._id} className="cart-item">
-              <img src={item.image} alt={item.name} className="cart-item-image" />
+              <img
+                src={item.image}
+                alt={item.name}
+                className="cart-item-image"
+                onError={(event) => {
+                  event.currentTarget.onerror = null;
+                  event.currentTarget.src = FALLBACK_PRODUCT_IMAGE;
+                }}
+              />
 
               <div className="cart-item-info">
                 <h3>{item.name}</h3>
-                <p>${Number(item.price).toFixed(2)}</p>
+                <p>{formatINR(item.price)}</p>
               </div>
 
               <div className="cart-controls">
@@ -93,7 +102,7 @@ function CartPage() {
 
       <div className="cart-total">
         <span>Total</span>
-        <strong>${totalPrice.toFixed(2)}</strong>
+        <strong>{formatINR(totalPrice)}</strong>
       </div>
 
       <div className="cart-actions">

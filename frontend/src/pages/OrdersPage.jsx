@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import PageCard from '../components/PageCard';
 import { useAuth } from '../context/AuthContext';
 import { getMyOrders } from '../services/orderService';
+import { FALLBACK_PRODUCT_IMAGE, formatINR } from '../utils/formatters';
 
 function OrdersPage() {
   const { token } = useAuth();
@@ -57,7 +58,7 @@ function OrdersPage() {
                 </div>
                 <div className="order-meta">
                   <span className="order-status">{order.status}</span>
-                  <strong>${Number(order.totalAmount).toFixed(2)}</strong>
+                  <strong>{formatINR(order.totalAmount)}</strong>
                 </div>
               </div>
 
@@ -77,17 +78,21 @@ function OrdersPage() {
                           src={product.image}
                           alt={product.name || 'Product'}
                           className="order-item-image"
+                          onError={(event) => {
+                            event.currentTarget.onerror = null;
+                            event.currentTarget.src = FALLBACK_PRODUCT_IMAGE;
+                          }}
                         />
                       ) : null}
 
                       <div className="order-item-info">
                         <h4>{product?.name || 'Product unavailable'}</h4>
                         <p>
-                          Qty: {item.quantity} x ${price.toFixed(2)}
+                          Qty: {item.quantity} x {formatINR(price)}
                         </p>
                       </div>
 
-                      <strong>${itemTotal.toFixed(2)}</strong>
+                      <strong>{formatINR(itemTotal)}</strong>
                     </div>
                   );
                 })}

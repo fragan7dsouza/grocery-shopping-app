@@ -2,6 +2,17 @@
 
 Node.js REST API backend for the grocery shopping application.
 
+## API Linking Checklist
+
+1. Create a local `.env` file in `backend/` from `.env.example`.
+2. Ensure these values are set:
+	- `MONGODB_URI` (your MongoDB connection string)
+	- `JWT_SECRET` (any long random string)
+	- `FRONTEND_URL` (typically `http://localhost:5173`)
+3. Install backend dependencies with `npm install`.
+4. Start backend with `npm run dev`.
+5. Confirm API is running via `GET /api/health`.
+
 ## Authentication
 
 Implemented with Mongoose, bcryptjs, and JWT.
